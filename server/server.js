@@ -7,6 +7,7 @@ var bodyParser = require('body-parser');
 var {ObjectID} = require('mongodb');
 
 var app= express();
+var port = process.env.PORT || 3000;
 
 app.use(bodyParser.json());
 
@@ -50,6 +51,6 @@ app.get('/todos/:id', (req,res) => {
 	});
 });
 
-app.listen(3000, ()=>{
-	console.log('Server Up and Running');
+app.listen(port, ()=>{
+	console.log(`Server Up and Running on ${port}`);
 });
