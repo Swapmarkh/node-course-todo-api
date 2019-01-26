@@ -55,7 +55,17 @@ userSchema.methods.generateAuthToken = function (){
 	});
 };
 
-userSchema.statics.findByToken = function(){	//similar to models but everything gets added as models
+userSchema.methods.removeToken = function(token){
+	var user = this;
+
+	return user.update({
+		$pull: {
+			tokens:{token}
+		}
+	});
+};
+
+userSchema.statics.findByToken = function(token){	//similar to models but everything gets added as models
 	var User = this;
 	var decoded; //decoded JWT values
 
@@ -70,6 +80,26 @@ userSchema.statics.findByToken = function(){	//similar to models but everything 
 		'_id' : decoded._id,
 		'tokens.token' : token,
 		'tokens.access' : 'auth'
+	});
+};
+
+userSchema.statics.findByCredentials = function (email, password){
+	var User = this;
+
+	return User.findOne({email}).then((user) => {
+		if(!user){
+			return Promise.reject();
+		}
+
+		return new Promise((resolve, reject) =>{
+			bcrypt.compare(password, user.password, (err, res) =>{
+				if(res)
+					resolve(user);
+				
+				else
+					reject();
+			});
+		});
 	});
 };
 
